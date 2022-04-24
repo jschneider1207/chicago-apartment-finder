@@ -1,8 +1,19 @@
 from chestnut_towers import get_availabilities
+from discord_helper import send_alert
 import argparse
 import sys
 
 def alert(args):
+  floor_plan_names = [f for sublist in args.floor_plans for f in sublist]
+  availabilities = get_availabilities()
+  floor_plans = [f for category in availabilities.categories for f in category.floor_plans if f.floor_plan in floor_plan_names and f.availability > 0]
+  
+  if len(floor_plans) == 0:
+    print('Found no availabilities')
+  else:
+    print('Found availabilities')
+    [print(f) for f in floor_plans]
+    send_alert(floor_plans)
   return
 
 def list(args):

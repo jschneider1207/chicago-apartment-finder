@@ -1,8 +1,12 @@
 from abc import ABC, abstractmethod
 import requests
 from bs4 import BeautifulSoup
+import urllib.parse
 
 URL = 'https://chestnuttowerchicago.securecafe.com/onlineleasing/chestnut-tower-apartments/floorplans.aspx'
+
+def url():
+  return URL
 
 def get_availabilities():
   page = requests.get(URL)
@@ -73,7 +77,7 @@ class FloorPlan(HtmlParsable):
     self.availability: int = availability
   
   def __str__(self):
-    return f'{self.floor_plan} ({self.bed_bath}): {self.sq_ft} sq ft, {self.rent} rent'
+    return f'{self.floor_plan} ({self.bed_bath}): {self.sq_ft} sq ft, {self.rent} rent, {self.availability} available'
   
   
   @classmethod
@@ -89,8 +93,10 @@ class FloorPlan(HtmlParsable):
   @classmethod
   def __parse_layout(cls, html):
     col = html.find('td', class_='floorplan-img')
-    img = col.find('img')
-    return img['data-src']
+    img = col.find('img')['data-src']
+    pre, sep, post = img.rpartition('/')
+    post = urllib.parse.quote(post)
+    return pre + sep + post
   
   @classmethod
   def __parse_floor_plan(cls, html):
@@ -100,7 +106,7 @@ class FloorPlan(HtmlParsable):
   @classmethod
   def __parse_bed_baths(cls, html):
     col = html.find('td', attrs={"data-label": "Beds"})
-    return col.span.next_sibling
+    return col.span.next_sibling.strip()
   
   @classmethod
   def __parse_sq_ft(cls, html):
