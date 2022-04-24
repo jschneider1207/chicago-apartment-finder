@@ -1,8 +1,6 @@
-from asyncio.windows_events import NULL
 from chestnut_towers import get_availabilities
 import argparse
 import sys
-import itertools
 
 def alert(args):
   return
@@ -43,3 +41,5 @@ def main():
 
 if __name__ == '__main__':
   sys.exit(main())
+
+  
